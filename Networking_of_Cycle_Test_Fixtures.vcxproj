@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{550BA5D6-55CC-4357-90BF-C221AE5D451D}</ProjectGuid>
+    <RootNamespace>Networking_of_Cycle_Test_Fixtures</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>C:\Program Files\arduino-nightly\hardware\arduino\avr\cores\arduino;C:\Program Files\arduino-nightly\hardware\arduino\avr\variants\mega;L:\CorpQA\3TC-Technology Testing Center\Tool &amp; Test Folders\Tools-Instruments Development\Networking of Cycle Test Fixtures\Networking_of_Cycle_Test_Fixtures;C:\Program Files\arduino-nightly\hardware\arduino\avr\libraries\EEPROM\src;C:\Program Files\arduino-nightly\hardware\arduino\avr\libraries\EEPROM\src\utility;C:\Program Files\arduino-nightly\libraries\Ethernet\src;C:\Program Files\arduino-nightly\libraries\Ethernet\src\utility;C:\Program Files\arduino-nightly\libraries\LiquidCrystal\src;C:\Program Files\arduino-nightly\libraries\LiquidCrystal\src\utility;C:\Program Files\arduino-nightly\hardware\arduino\avr\libraries\SPI\src;C:\Program Files\arduino-nightly\hardware\arduino\avr\libraries\SPI\src\utility;L:\CorpQA\3TC-Technology Testing Center\Tool &amp; Test Folders\Tools-Instruments Development\Networking of Cycle Test Fixtures\libraries\StationBay;L:\CorpQA\3TC-Technology Testing Center\Tool &amp; Test Folders\Tools-Instruments Development\Networking of Cycle Test Fixtures\libraries\StationBay\utility;C:\Program Files\arduino-nightly\libraries;C:\Program Files\arduino-nightly\hardware\arduino\avr\libraries;C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\5n41wscr.vuy\Micro Platforms\default\debuggers;L:\CorpQA\3TC-Technology Testing Center\Tool &amp; Test Folders\Tools-Instruments Development\Networking of Cycle Test Fixtures\libraries;C:\Program Files\arduino-nightly\hardware\tools\avr/avr/include/;C:\Program Files\arduino-nightly\hardware\tools\avr//avr/include/avr/;C:\Program Files\arduino-nightly\hardware\tools\avr/lib\gcc\avr\4.8.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>L:\CorpQA\3TC-Technology Testing Center\Tool &amp; Test Folders\Tools-Instruments Development\Networking of Cycle Test Fixtures\Networking_of_Cycle_Test_Fixtures\__vm\.Networking_of_Cycle_Test_Fixtures.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <PreprocessorDefinitions>__AVR_ATmega2560__;_VMDEBUG=1;F_CPU=16000000L;ARDUINO=10607;ARDUINO_AVR_MEGA2560;ARDUINO_ARCH_AVR;__cplusplus=201103L;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>C:\Program Files\arduino-nightly\hardware\arduino\avr\cores\arduino;C:\Program Files\arduino-nightly\hardware\arduino\avr\variants\mega;L:\CorpQA\3TC-Technology Testing Center\Tool &amp; Test Folders\Tools-Instruments Development\Networking of Cycle Test Fixtures\Networking_of_Cycle_Test_Fixtures;C:\Program Files\arduino-nightly\hardware\arduino\avr\libraries\EEPROM\src;C:\Program Files\arduino-nightly\hardware\arduino\avr\libraries\EEPROM\src\utility;C:\Program Files\arduino-nightly\libraries\Ethernet\src;C:\Program Files\arduino-nightly\libraries\Ethernet\src\utility;C:\Program Files\arduino-nightly\libraries\LiquidCrystal\src;C:\Program Files\arduino-nightly\libraries\LiquidCrystal\src\utility;C:\Program Files\arduino-nightly\hardware\arduino\avr\libraries\SPI\src;C:\Program Files\arduino-nightly\hardware\arduino\avr\libraries\SPI\src\utility;L:\CorpQA\3TC-Technology Testing Center\Tool &amp; Test Folders\Tools-Instruments Development\Networking of Cycle Test Fixtures\libraries\StationBay;L:\CorpQA\3TC-Technology Testing Center\Tool &amp; Test Folders\Tools-Instruments Development\Networking of Cycle Test Fixtures\libraries\StationBay\utility;C:\Program Files\arduino-nightly\libraries;C:\Program Files\arduino-nightly\hardware\arduino\avr\libraries;C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Extensions\5n41wscr.vuy\Micro Platforms\default\debuggers;L:\CorpQA\3TC-Technology Testing Center\Tool &amp; Test Folders\Tools-Instruments Development\Networking of Cycle Test Fixtures\libraries;C:\Program Files\arduino-nightly\hardware\tools\avr/avr/include/;C:\Program Files\arduino-nightly\hardware\tools\avr//avr/include/avr/;C:\Program Files\arduino-nightly\hardware\tools\avr/lib\gcc\avr\4.8.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>L:\CorpQA\3TC-Technology Testing Center\Tool &amp; Test Folders\Tools-Instruments Development\Networking of Cycle Test Fixtures\Networking_of_Cycle_Test_Fixtures\__vm\.Networking_of_Cycle_Test_Fixtures.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <PreprocessorDefinitions>__AVR_ATmega2560__;F_CPU=16000000L;ARDUINO=10607;ARDUINO_AVR_MEGA2560;ARDUINO_ARCH_AVR;__cplusplus=201103L;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <None Include="Networking_of_Cycle_Test_Fixtures.ino">
+      <FileType>CppCode</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="__vm\.Networking_of_Cycle_Test_Fixtures.vsarduino.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties arduino.upload.port="COM3" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
