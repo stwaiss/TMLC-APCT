@@ -8,7 +8,7 @@
   *  Author : Sean Waiss, Chris Ostram
   *  Date : 4/18/2016
   */
-
+  
 #include <LiquidCrystal.h>
 #include <EEPROM.h>
 #include <Ethernet.h>
@@ -18,7 +18,7 @@
 #include <PinChangeInt.h>
 //#include <avr/wdt.h>
 
-
+//Declares an array of 6 station bay objects
 StationBay bays[6];
 byte mac[] = { 0x00, 0xAA, 0xBB, 0xCC, 0xDE, 0x02 };
 EthernetClient client;
