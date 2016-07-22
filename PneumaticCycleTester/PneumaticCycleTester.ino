@@ -5,7 +5,7 @@
   *
   *  Any replication of this code without written consent from The Master Lock Company LLC is strictly prohibited
   *
-  *  Author : Sean Waiss, Chris Ostram
+  *  Author : Sean Waiss, Chris Ostram, Brandon Howard, Ernest Panzera
   *  Date : 4/18/2016
   */
   
