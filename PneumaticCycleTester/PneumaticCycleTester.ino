@@ -53,17 +53,19 @@ void setup() {
 //  	  delay(3000);
 //  	} 
 //  }
-//  if(EEPROM.read(0) == 0){
-//	  Serial.println("No EEPROM, Initializing Bays");
-//	  bays[0] = StationBay();
-//	  bays[1] = StationBay(4, 24, A8);
-//	  bays[2] = StationBay(5, 25, 14);
-//	  bays[3] = StationBay(6, 26, 13);
-//	  bays[4] = StationBay(7, 27, 12);
-//	  bays[5] = StationBay(8, 28, 11);
-//	  lcd.setCursor(0,1);
-//	  lcd.print("Bays Initialized");
-//  } 
+  
+  //Still needs to be included, regardless of EEPROM usage.
+  if(EEPROM.read(0) == 0){
+	  Serial.println("No EEPROM, Initializing Bays");
+	  bays[0] = StationBay();
+	  bays[1] = StationBay(4, 24, A8);
+	  bays[2] = StationBay(5, 25, 14);
+	  bays[3] = StationBay(6, 26, 13);
+	  bays[4] = StationBay(7, 27, 12);
+	  bays[5] = StationBay(8, 28, 11);
+	  lcd.setCursor(0,1);
+	  lcd.print("Bays Initialized");
+  } 
   
   lcd.setCursor(0,3);
   lcd.print("Trying to connect");
