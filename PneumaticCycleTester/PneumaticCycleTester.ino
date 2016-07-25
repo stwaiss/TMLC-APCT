@@ -58,6 +58,11 @@ void setup() {
   if(EEPROM.read(0) == 0){
 	  Serial.println("No EEPROM, Initializing Bays");
 	  bays[0] = StationBay();
+	  bays[1] = StationBay(4, 24, 2);
+	  bays[2] = StationBay(5, 25, 3);
+	  bays[3] = StationBay(6, 26, 18);
+	  bays[4] = StationBay(7, 27, 19);
+	  bays[5] = StationBay(8, 28, 20);
 	  lcd.setCursor(0,1);
 	  lcd.print("Bays Initialized");
   } 
