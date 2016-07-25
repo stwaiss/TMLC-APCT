@@ -16,7 +16,6 @@
 #include <avr/interrupt.h>
 #include <StationBay.h>
 #include <PinChangeInt.h>
-//#include <avr/wdt.h>
 
 //Declares an array of 6 station bay objects
 StationBay bays[6];
@@ -27,23 +26,9 @@ LiquidCrystal lcd(37,36,35,34,33,32);
 unsigned long mainLCDTimerRefresh = 0;
 int ethernetCounter = 0;
 
-//ResetFuntion
+//Global Functions
 void(*resetFunc)(void) = 0;
-
-//ISR(WDT_vect){
-//  lcd.clear();
-//  lcd.setCursor(0,0);
-//  lcd.print("About to Reset");
-//  lcd.setCursor(0,1);
-//  lcd.print("Saving Cycle counts");
-//  for(int i = 0; i < 500; i++){
-//    
-//  }
-//  storeCycleCounts();
-//  resetFunc();
-//}
-
-//*************************************************************************************************************************************************
+void writeToHTML(void);
 
 void setup() {
   lcd.begin(20,4);
@@ -51,39 +36,34 @@ void setup() {
   
 	Serial.begin(9600);
 	Serial.println("Begin");
-	
-	//noInterrupts();
-  
+	  
   PCintPort::attachInterrupt(5, isrPCI5, RISING);
   PCintPort::attachInterrupt(6, isrPCI6, RISING);
   PCintPort::attachInterrupt(7, isrPCI7, RISING);
   PCintPort::attachInterrupt(9, isrPCI9, RISING);
   PCintPort::attachInterrupt(16, isrPCI16, RISING);
-
-
-  //Serial.println("Completed Masking");
   
   lcd.setCursor(0,0);
   lcd.print("Beginning Program");
-  for(int i = 0; i < 1024; i++){
-  	if(EEPROM.read(i) == 1){
-  	  readInCycleCounts();
-  	  lcd.setCursor(0,1);
-  	  lcd.print("Reading in counts");
-  	  delay(3000);
-  	} 
-  }
-  if(EEPROM.read(0) == 0){
-	  Serial.println("No EEPROM, Initializing Bays");
-	  bays[0] = StationBay();
-	  bays[1] = StationBay(4, 24, A8);
-	  bays[2] = StationBay(5, 25, 14);
-	  bays[3] = StationBay(6, 26, 13);
-	  bays[4] = StationBay(7, 27, 12);
-	  bays[5] = StationBay(8, 28, 11);
-	  lcd.setCursor(0,1);
-	  lcd.print("Bays Initialized");
-  } 
+//  for(int i = 0; i < 1024; i++){
+//  	if(EEPROM.read(i) == 1){
+//  	  readInCycleCounts();
+//  	  lcd.setCursor(0,1);
+//  	  lcd.print("Reading in counts");
+//  	  delay(3000);
+//  	} 
+//  }
+//  if(EEPROM.read(0) == 0){
+//	  Serial.println("No EEPROM, Initializing Bays");
+//	  bays[0] = StationBay();
+//	  bays[1] = StationBay(4, 24, A8);
+//	  bays[2] = StationBay(5, 25, 14);
+//	  bays[3] = StationBay(6, 26, 13);
+//	  bays[4] = StationBay(7, 27, 12);
+//	  bays[5] = StationBay(8, 28, 11);
+//	  lcd.setCursor(0,1);
+//	  lcd.print("Bays Initialized");
+//  } 
   
   lcd.setCursor(0,3);
   lcd.print("Trying to connect");
@@ -102,29 +82,16 @@ void setup() {
   lcd.clear();
   Serial.println("lcd cleared");
 
-  pinMode(47, OUTPUT);
-  digitalWrite(47, HIGH);
-
-  //interrupts();
-
-  //MCUSR = 0; //reset the status register of the MCU
-  //WDTCSR |= ((1<<WDCE) | (1<<WDE));
-  //// set the "Interrupt Mode" with a timeout of 8 sec
-  //WDTCSR = ((1<<WDIE)| (1<<WDP3) | (1<<WDP0));
-  //SREG |= (1<<SREG_I); //re-enable global interrupts
+  server.begin();
 }
 
 //*****************************************************************************************************************************************
 
 void loop() {
-  server.begin();
+  
   checkTimers();
   checkPower();
   checkReset();
-
-digitalWrite(47, HIGH);
-delay(300);
-digitalWrite(47, LOW);
   
   if(ethernetCounter >= 5){
       lcd.clear();
@@ -214,50 +181,50 @@ void isrPCI16(){
 //*****************************************************************************************************************************************
 
 //store cycle counts to EEPROM before reset
-void storeCycleCounts(){
-  int station = 1;
-  for(int byteNo = 0; byteNo <=9; byteNo+=2, station++){
-    EEPROM.write(byteNo, highByte(bays[station].getCycleCount()));
-    EEPROM.write(byteNo + 1, lowByte(bays[station].getCycleCount()));
-  }
-}
+//void storeCycleCounts(){
+//  int station = 1;
+//  for(int byteNo = 0; byteNo <=9; byteNo+=2, station++){
+//    EEPROM.write(byteNo, highByte(bays[station].getCycleCount()));
+//    EEPROM.write(byteNo + 1, lowByte(bays[station].getCycleCount()));
+//  }
+//}
 
 //read in stored cycle counts from EEPROM and then wipe
-void readInCycleCounts(){
-  int station = 1;
-  bays[0] = StationBay();
-  for(int byteNo = 0; byteNo < 10; byteNo+=2){
-    byte high = EEPROM.read(byteNo);
-    byte low = EEPROM.read(byteNo + 1);
-    int cc = (high<<8) + low;
-
-    switch(station){
-      case(1):
-        bays[1] = StationBay(21,31,15, cc);
-        break;
-      case(2):
-        bays[2] = StationBay(20,32,14, cc);
-        break;
-      case(3):
-        bays[3] = StationBay(19,33,13, cc);
-        break;
-      case(4):
-        bays[4] = StationBay(18,34,12, cc);
-        break;
-      case(5):
-        bays[5] = StationBay(03,35,11, cc);
-        break;
-      default:
-        break;
-    }
-  }
-
-  //clears EEPROM
-  for(int i = 0; i < 1024; i++){
-    EEPROM.write(i, 0);
-  }
-  //wdt_reset();
-}
+//void readInCycleCounts(){
+//  int station = 1;
+//  bays[0] = StationBay();
+//  for(int byteNo = 0; byteNo < 10; byteNo+=2){
+//    byte high = EEPROM.read(byteNo);
+//    byte low = EEPROM.read(byteNo + 1);
+//    int cc = (high<<8) + low;
+//
+//    switch(station){
+//      case(1):
+//        bays[1] = StationBay(21,31,15, cc);
+//        break;
+//      case(2):
+//        bays[2] = StationBay(20,32,14, cc);
+//        break;
+//      case(3):
+//        bays[3] = StationBay(19,33,13, cc);
+//        break;
+//      case(4):
+//        bays[4] = StationBay(18,34,12, cc);
+//        break;
+//      case(5):
+//        bays[5] = StationBay(03,35,11, cc);
+//        break;
+//      default:
+//        break;
+//    }
+//  }
+//
+//  //clears EEPROM
+//  for(int i = 0; i < 1024; i++){
+//    EEPROM.write(i, 0);
+//  }
+//  //wdt_reset();
+//}
 
 void printIPAddress(){
   //Serial.println("printing IP Address");
@@ -277,7 +244,7 @@ void printIPAddress(){
        // Serial.print(".");
      }
     }
-    mainLCDTimerRefresh = millis() + 5000;
+    mainLCDTimerRefresh = millis() + 5000; // Why are you doing this?
   }
   else{
     return;
@@ -310,12 +277,8 @@ void checkReset(){
 
 void checkTimers(){
   for(int i = 1; i < 6; i++){
-//    Serial.print("StationTimer: " + bays[i].getStationTimer());
-//    Serial.print(" Millis: " + millis());
-//    Serial.print(" PowerStatus: " + bays[i].getPowerStatus());
-//    Serial.println();
-    if((long) millis() > bays[i].getStationTimer() && bays[i].getPowerStatus() == 1){
-       if(bays[i].getIsStuck() == 0){
+    if((unsigned long) millis() > bays[i].getStationTimer() && bays[i].getPowerStatus() == 1){
+       if(bays[i].getIsStuck() == 0){ // Used to run through only once.
           bays[i].incrementTimesIsStuck();
        }
        bays[i].setIsStuckTrue(); 
@@ -324,129 +287,4 @@ void checkTimers(){
        bays[i].setIsStuckFalse();
     }
   }
-}
-  
-void writeToHTML(){
-  EthernetClient client = server.available();
-  if (client) {
-    // an http request ends with a blank line
-    boolean currentLineIsBlank = true;
-    
-    while (client.connected()) {
-      if (client.available()) {
-        char c = client.read();
-        Serial.write(c);
-        // if you've gotten to the end of the line (received a newline
-        // character) and the line is blank, the http request has ended,
-        // so you can send a reply
-        if (c == '\n' && currentLineIsBlank) {
-          // send a standard http response header
-          client.println("HTTP/1.1 200 OK");
-          client.println("Content-Type: text/html");
-          client.println("Connection: close");  // the connection will be closed after completion of the response
-          client.println();
-          client.println("");
-          
-          client.println("<!DOCTYPE HTML>");
-          
-          client.println("<html>");
-          
-          client.println("<head>");
-          client.println("<title>The Technology Testing Center (3TC)</title>");
-          client.println("<META HTTP-EQUIV=\"refresh\" CONTENT=\"1\">");
-          client.println("<link href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7\" crossorigin=\"anonymous\">");
-          client.println("</head>");
-
-          client.println("<body>");
-          client.println("<div class=\"content\">");
-          
-          client.println("<h1> The Master Lock Company LLC</h1>");
-          client.println("<h2>The Technology Testing Center (3TC)</h2>");
-          client.println("<p>Automated Pneumatic Cycle Test Fixture</p>");
-          
-          String milliseconds = String(millis());
-          client.println("<p>" + milliseconds + "</p>");
-
-          //Insert table of StationBay data - Set up table headers
-          client.println("<table class=\"table table-bordered table-striped table-hover\">");
-          client.println("<thead>");
-          client.println("<tr>");
-
-          client.println("<th>Station # </th>");
-          client.println("<th>Power Status </th>");
-          client.println("<th>Stuck? </th>");
-          client.println("<th>Times Stuck </th>");
-          client.println("<th>Cycle Count </th>");
-          client.println("<th>Station Timer </th>");
-
-          client.println("</tr>");
-          client.println("</thead>");
-
-          client.println("<tbody>");
-          //print data to table iteratively
-          for (int stationNo = 1; stationNo < 6; stationNo++) {
-
-              client.println("<tr>");           
-              
-              client.println("<td>");
-              client.println(stationNo);
-              client.println("</td>");
-            
-              //Change 0 or 1 to OFF or ON
-              if(bays[stationNo].getPowerStatus() == 0){
-                  client.println("<td> OFF </td>");
-              }else if(bays[stationNo].getPowerStatus() == 1){
-                  client.println("<td> ON </td>");
-              }
-            
-              //Change 0 or 1 to NO or YES, if YES, set cell background to RED
-              if(bays[stationNo].getIsStuck() == 0){
-                  client.println("<td> NO </td>");
-              } else if(bays[stationNo].getIsStuck() == 1){
-                  //client.println("<td BGCOLOR=\"DC143C\"> YES </td>");
-                  
-                  client.println("<td> YES </td>");
-              }
-              
-              client.println("<td>");
-              client.println(bays[stationNo].getTimesIsStuck());
-              client.println("</td>");
-            
-              client.println("<td>");
-              client.println(bays[stationNo].getCycleCount());
-              client.println("</td>");
-            
-              client.println("<td>");
-              client.println(bays[stationNo].getStationTimer());
-              client.println("</td>");
-            
-              client.println("</tr>");
-          }
-          client.println("</tbody>");
-
-          client.println("</table>");
-          client.println("<p>Content created by Sean T. Waiss and Ernest Pazera</p>");
-          
-          client.println("</div>");
-          client.println("</body>");
-          client.println("</html>");
-          break;
-        }
-     
-         if (c == '\n') {
-            // you're starting a new line
-             currentLineIsBlank = true;
-         } else if (c != '\r') {
-            // you've gotten a character on the current line
-            currentLineIsBlank = false;
-         }
-      }
-    }
-    // give the web browser time to receive the data
-    delay(1);
-    // close the connection:
-    client.stop();
-   //wdt_reset();
-  }
-
 }
