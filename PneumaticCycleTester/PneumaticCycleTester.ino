@@ -298,6 +298,10 @@ void checkPower(){
 void checkReset(){
   for(int i = 1; i < 6; i++){
     if(digitalRead(bays[i].getResetPin()) == HIGH){
+//      Serial.print("Bay Reset: ");
+//      Serial.print(i);
+//      Serial.print("   Reset Pin: ");
+//      Serial.println(digitalRead(bays[i].getResetPin()));
       bays[i].resetCycleCount();
       bays[i].resetTimesIsStuck();
     }
@@ -321,6 +325,8 @@ void checkTimers(){
     }
   }
 }
+
+//*************************************************************************************************************************************************************
   
 void writeToHTML(){
   EthernetClient client = server.available();
@@ -331,7 +337,7 @@ void writeToHTML(){
     while (client.connected()) {
       if (client.available()) {
         char c = client.read();
-        Serial.write(c);
+       // Serial.write(c);
         // if you've gotten to the end of the line (received a newline
         // character) and the line is blank, the http request has ended,
         // so you can send a reply
@@ -446,3 +452,6 @@ void writeToHTML(){
   }
 
 }
+
+
+
