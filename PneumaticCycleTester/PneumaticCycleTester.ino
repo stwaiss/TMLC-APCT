@@ -54,11 +54,11 @@ void setup() {
 	
 	//noInterrupts();
   
-  PCintPort::attachInterrupt(5, isrPCI5, RISING);
-  PCintPort::attachInterrupt(6, isrPCI6, RISING);
-  PCintPort::attachInterrupt(7, isrPCI7, RISING);
-  PCintPort::attachInterrupt(9, isrPCI9, RISING);
-  PCintPort::attachInterrupt(16, isrPCI16, RISING);
+  PCintPort::attachInterrupt(11, isrPCI5, RISING);   //Station 1, D11
+  PCintPort::attachInterrupt(12, isrPCI6, RISING);   //Station 2, D12
+  PCintPort::attachInterrupt(13, isrPCI7, RISING);   //Station 3, D13
+  PCintPort::attachInterrupt(14, isrPCI9, RISING);   //Station 4, D14
+  PCintPort::attachInterrupt(A8, isrPCI16, RISING); //Station 5, A8
 
 
   //Serial.println("Completed Masking");
@@ -76,11 +76,11 @@ void setup() {
   if(EEPROM.read(0) == 0){
 	  Serial.println("No EEPROM, Initializing Bays");
 	  bays[0] = StationBay();
-	  bays[1] = StationBay(4, 24, A8);
-	  bays[2] = StationBay(5, 25, 14);
+	  bays[1] = StationBay(4, 24, 11);
+	  bays[2] = StationBay(5, 25, 12);
 	  bays[3] = StationBay(6, 26, 13);
-	  bays[4] = StationBay(7, 27, 12);
-	  bays[5] = StationBay(8, 28, 11);
+	  bays[4] = StationBay(7, 27, A8);
+	  bays[5] = StationBay(8, 28, 14);
 	  lcd.setCursor(0,1);
 	  lcd.print("Bays Initialized");
   } 
@@ -121,10 +121,6 @@ void loop() {
   checkTimers();
   checkPower();
   checkReset();
-
-digitalWrite(47, HIGH);
-delay(300);
-digitalWrite(47, LOW);
   
   if(ethernetCounter >= 5){
       lcd.clear();
@@ -177,16 +173,16 @@ digitalWrite(47, LOW);
 //Pin Change Interrupts
 //LCD interrupts
 void isrPCI5(){
-  bays[5].incrementCycleCount();
-  bays[5].setIsStuckFalse();
-  bays[5].setStationTimer(millis() + 7000);
+  bays[1].incrementCycleCount();
+  bays[1].setIsStuckFalse();
+  bays[1].setStationTimer(millis() + 7000);
   //checkTimers(); 
 }
 
 void isrPCI6(){
-  bays[4].incrementCycleCount();
-  bays[4].setIsStuckFalse();
-  bays[4].setStationTimer(millis() + 7000);
+  bays[2].incrementCycleCount();
+  bays[2].setIsStuckFalse();
+  bays[2].setStationTimer(millis() + 7000);
   //checkTimers();
 }
 
@@ -198,16 +194,16 @@ void isrPCI7(){
 }
 
 void isrPCI9(){
-  bays[2].incrementCycleCount();
-  bays[2].setIsStuckFalse();
-  bays[2].setStationTimer(millis() + 7000);
+  bays[5].incrementCycleCount();
+  bays[5].setIsStuckFalse();
+  bays[5].setStationTimer(millis() + 7000);
   //checkTimers();
 }
 
 void isrPCI16(){
-  bays[1].incrementCycleCount();
-  bays[1].setIsStuckFalse();
-  bays[1].setStationTimer(millis() + 7000);
+  bays[4].incrementCycleCount();
+  bays[4].setIsStuckFalse();
+  bays[4].setStationTimer(millis() + 7000);
   //checkTimers();
 }
 
