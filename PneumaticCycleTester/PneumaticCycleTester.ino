@@ -257,11 +257,13 @@ void printIPAddress(){
   if(mainLCDTimerRefresh < millis()){
     lcd.clear();
     lcd.setCursor(0,0);
-    lcd.print("Currently Online");
+    lcd.print("Type IP Address Into");
     lcd.setCursor(0,1);
+    lcd.print("Your Web Browser");
+    lcd.setCursor(0,2);
     lcd.print("IP Address:");
    // Serial.print("IP Address:");
-    lcd.setCursor(0,2);
+    lcd.setCursor(0,3);
     for(byte thisByte = 0; thisByte < 4; thisByte++){
       lcd.print(Ethernet.localIP()[thisByte], DEC);
      // Serial.print(Ethernet.localIP()[thisByte], DEC);
@@ -426,6 +428,7 @@ void writeToHTML(){
           client.println("</tbody>");
 
           client.println("</table>");
+          client.println("<p>Page refreshes every ~5 seconds</p>");
           client.println("<p>Content created by Sean T. Waiss and Ernest Pazera</p>");
           
           client.println("</div>");
