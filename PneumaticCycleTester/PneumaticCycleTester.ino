@@ -13,7 +13,7 @@
 #include <EEPROM.h>
 #include <Ethernet.h>
 #include <SPI.h>
-#include <avr/interrupt.h>
+//#include <avr/interrupt.h>
 #include <StationBay.h>
 #include <PinChangeInt.h>
 //#include <avr/wdt.h>
@@ -54,11 +54,11 @@ void setup() {
 	
 	//noInterrupts();
   
-  PCintPort::attachInterrupt(11, isrPCI5, RISING);   //Station 1, D11
-  PCintPort::attachInterrupt(12, isrPCI6, RISING);   //Station 2, D12
-  PCintPort::attachInterrupt(13, isrPCI7, RISING);   //Station 3, D13
-  PCintPort::attachInterrupt(14, isrPCI9, RISING);   //Station 4, D14
-  PCintPort::attachInterrupt(A8, isrPCI16, RISING); //Station 5, A8
+  PCintPort::attachInterrupt(11, stationOneLCD, RISING);   //Station 1, D11
+  PCintPort::attachInterrupt(12, stationTwoLCD, RISING);   //Station 2, D12
+  PCintPort::attachInterrupt(13, stationThreeLCD, RISING);   //Station 3, D13
+  PCintPort::attachInterrupt(A8, stationFourLCD, RISING);   //Station 4, D14
+  PCintPort::attachInterrupt(A9, stationFiveLCD, RISING); //Station 5, D15
 
 
   //Serial.println("Completed Masking");
@@ -76,11 +76,11 @@ void setup() {
   if(EEPROM.read(0) == 0){
 	  Serial.println("No EEPROM, Initializing Bays");
 	  bays[0] = StationBay();
-	  bays[1] = StationBay(4, 24, 11);
-	  bays[2] = StationBay(5, 25, 12);
-	  bays[3] = StationBay(6, 26, 13);
-	  bays[4] = StationBay(7, 27, A8);
-	  bays[5] = StationBay(8, 28, 14);
+	  bays[1] = StationBay(A5, 24, 11);
+	  bays[2] = StationBay(A4, 25, 12);
+	  bays[3] = StationBay(A3, 26, 13);
+	  bays[4] = StationBay(A2, 27, A8);
+	  bays[5] = StationBay(A1, 28, A9);
 	  lcd.setCursor(0,1);
 	  lcd.print("Bays Initialized");
   } 
@@ -101,9 +101,6 @@ void setup() {
   }
   lcd.clear();
   Serial.println("lcd cleared");
-
-  pinMode(47, OUTPUT);
-  digitalWrite(47, HIGH);
 
   //interrupts();
 
@@ -172,38 +169,38 @@ void loop() {
 //**************************************************************************************************************************************
 //Pin Change Interrupts
 //LCD interrupts
-void isrPCI5(){
+void stationOneLCD(){
   bays[1].incrementCycleCount();
   bays[1].setIsStuckFalse();
   bays[1].setStationTimer(millis() + 7000);
   //checkTimers(); 
 }
 
-void isrPCI6(){
+void stationTwoLCD(){
   bays[2].incrementCycleCount();
   bays[2].setIsStuckFalse();
   bays[2].setStationTimer(millis() + 7000);
   //checkTimers();
 }
 
-void isrPCI7(){
+void stationThreeLCD(){
   bays[3].incrementCycleCount();
   bays[3].setIsStuckFalse();
   bays[3].setStationTimer(millis() + 7000);
   //checkTimers();
 }
 
-void isrPCI9(){
-  bays[5].incrementCycleCount();
-  bays[5].setIsStuckFalse();
-  bays[5].setStationTimer(millis() + 7000);
-  //checkTimers();
-}
-
-void isrPCI16(){
+void stationFourLCD(){
   bays[4].incrementCycleCount();
   bays[4].setIsStuckFalse();
   bays[4].setStationTimer(millis() + 7000);
+  //checkTimers();
+}
+
+void stationFiveLCD(){
+  bays[5].incrementCycleCount();
+  bays[5].setIsStuckFalse();
+  bays[5].setStationTimer(millis() + 7000);
   //checkTimers();
 }
 
@@ -297,11 +294,11 @@ void checkPower(){
 
 void checkReset(){
   for(int i = 1; i < 6; i++){
-    if(digitalRead(bays[i].getResetPin()) == HIGH){
-//      Serial.print("Bay Reset: ");
-//      Serial.print(i);
-//      Serial.print("   Reset Pin: ");
-//      Serial.println(digitalRead(bays[i].getResetPin()));
+    if(analogRead(bays[i].getResetPin())*5.0/1023.0 > 4.8 && bays[i].getPowerStatus()== 0){     
+      Serial.print("Bay Reset: ");
+      Serial.print(i);
+      Serial.print("   Voltage is ");
+      Serial.println(analogRead(bays[i].getResetPin())*5.0/1023.0);
       bays[i].resetCycleCount();
       bays[i].resetTimesIsStuck();
     }
@@ -374,13 +371,12 @@ void writeToHTML(){
           client.println("<thead>");
           client.println("<tr>");
 
-          client.println("<th>Station # </th>");
-          client.println("<th>Power Status </th>");
-          client.println("<th>Stuck? </th>");
-          client.println("<th>Times Stuck </th>");
-          client.println("<th>Cycle Count </th>");
-          client.println("<th>Station Timer </th>");
-
+          client.println("<th style=\"text-align:center\">Station # </th>");
+          client.println("<th style=\"text-align:center\">Power Status </th>");
+          client.println("<th style=\"text-align:center\">Stuck? </th>");
+          client.println("<th style=\"text-align:center\">Times Stuck </th>");
+          client.println("<th style=\"text-align:center\">Cycle Count </th>");
+          client.println("<th style=\"text-align:center\">Station Timer </th>");
           client.println("</tr>");
           client.println("</thead>");
 
@@ -390,35 +386,35 @@ void writeToHTML(){
 
               client.println("<tr>");           
               
-              client.println("<td>");
+              client.println("<td align = \"center\">");
               client.println(stationNo);
               client.println("</td>");
             
               //Change 0 or 1 to OFF or ON
               if(bays[stationNo].getPowerStatus() == 0){
-                  client.println("<td> OFF </td>");
+                  client.println("<td align = \"center\"> OFF </td>");
               }else if(bays[stationNo].getPowerStatus() == 1){
-                  client.println("<td> ON </td>");
+                  client.println("<td align = \"center\"> ON </td>");
               }
             
               //Change 0 or 1 to NO or YES, if YES, set cell background to RED
               if(bays[stationNo].getIsStuck() == 0){
-                  client.println("<td> NO </td>");
+                  client.println("<td align = \"center\"> NO </td>");
               } else if(bays[stationNo].getIsStuck() == 1){
-                  //client.println("<td BGCOLOR=\"DC143C\"> YES </td>");
+                  client.println("<td align = \"center\" BGCOLOR=\"DC143C\"> YES </td>");
                   
-                  client.println("<td> YES </td>");
+                 // client.println("<td align = \"center\"> YES </td>");
               }
               
-              client.println("<td>");
+              client.println("<td align = \"center\">");
               client.println(bays[stationNo].getTimesIsStuck());
               client.println("</td>");
             
-              client.println("<td>");
+              client.println("<td align = \"center\">");
               client.println(bays[stationNo].getCycleCount());
               client.println("</td>");
             
-              client.println("<td>");
+              client.println("<td align = \"center\">");
               client.println(bays[stationNo].getStationTimer());
               client.println("</td>");
             
