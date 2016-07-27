@@ -294,13 +294,16 @@ void checkPower(){
 
 void checkReset(){
   for(int i = 1; i < 6; i++){
-    if(analogRead(bays[i].getResetPin())*5.0/1023.0 > 4.8 && bays[i].getPowerStatus()== 0){     
-      Serial.print("Bay Reset: ");
-      Serial.print(i);
-      Serial.print("   Voltage is ");
-      Serial.println(analogRead(bays[i].getResetPin())*5.0/1023.0);
-      bays[i].resetCycleCount();
-      bays[i].resetTimesIsStuck();
+    if(analogRead(bays[i].getResetPin())*5.0/1023.0 > 4.8 && bays[i].getPowerStatus()== 0){ //Initial Check
+      delay(50);                                                                            //Debounce Noise
+      if(analogRead(bays[i].getResetPin())*5.0/1023.0>4.0){                                 //Secondary Check
+        Serial.print("Bay Reset: ");
+        Serial.print(i);
+        Serial.print("   Voltage is ");
+        Serial.println(analogRead(bays[i].getResetPin())*5.0/1023.0);
+        bays[i].resetCycleCount();
+        bays[i].resetTimesIsStuck();   
+      }
     }
   }
 }
@@ -352,7 +355,7 @@ void writeToHTML(){
           
           client.println("<head>");
           client.println("<title>The Technology Testing Center (3TC)</title>");
-          client.println("<META HTTP-EQUIV=\"refresh\" CONTENT=\"1\">");
+          client.println("<META HTTP-EQUIV=\"refresh\" CONTENT=\"5\">");          //Content = Seconds before next refresh
           client.println("<link href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7\" crossorigin=\"anonymous\">");
           client.println("</head>");
 
