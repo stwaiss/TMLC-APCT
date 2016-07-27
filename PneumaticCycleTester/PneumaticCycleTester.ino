@@ -363,8 +363,8 @@ void writeToHTML(){
           client.println("<h2>The Technology Testing Center (3TC)</h2>");
           client.println("<p>Automated Pneumatic Cycle Test Fixture</p>");
           
-          String milliseconds = String(millis());
-          client.println("<p>" + milliseconds + "</p>");
+//          String milliseconds = String(millis());
+//          client.println("<p>" + milliseconds + "</p>");
 
           //Insert table of StationBay data - Set up table headers
           client.println("<table class=\"table table-bordered table-striped table-hover\">");
@@ -376,7 +376,7 @@ void writeToHTML(){
           client.println("<th style=\"text-align:center\">Stuck? </th>");
           client.println("<th style=\"text-align:center\">Times Stuck </th>");
           client.println("<th style=\"text-align:center\">Cycle Count </th>");
-          client.println("<th style=\"text-align:center\">Station Timer </th>");
+//          client.println("<th style=\"text-align:center\">Station Timer </th>");
           client.println("</tr>");
           client.println("</thead>");
 
@@ -414,9 +414,9 @@ void writeToHTML(){
               client.println(bays[stationNo].getCycleCount());
               client.println("</td>");
             
-              client.println("<td align = \"center\">");
-              client.println(bays[stationNo].getStationTimer());
-              client.println("</td>");
+//              client.println("<td align = \"center\">");
+//              client.println(bays[stationNo].getStationTimer());
+//              client.println("</td>");
             
               client.println("</tr>");
           }
