@@ -13,9 +13,10 @@
 #include <EEPROM.h>
 #include <Ethernet.h>
 #include <SPI.h>
+//#include <avr/interrupt.h>
 #include <StationBay.h>
 #include <PinChangeInt.h>
-
+//#include <avr/wdt.h>
 
 //Declares an array of 6 station bay objects
 StationBay bays[6];
@@ -28,6 +29,20 @@ int ethernetCounter = 0;
 
 //ResetFuntion
 void(*resetFunc)(void) = 0;
+
+//ISR(WDT_vect){
+//  lcd.clear();
+//  lcd.setCursor(0,0);
+//  lcd.print("About to Reset");
+//  lcd.setCursor(0,1);
+//  lcd.print("Saving Cycle counts");
+//  for(int i = 0; i < 500; i++){
+//    
+//  }
+//  storeCycleCounts();
+//  resetFunc();
+//}
+
 //*************************************************************************************************************************************************
 
 void setup() {
@@ -36,26 +51,39 @@ void setup() {
   
 	Serial.begin(9600);
 	Serial.println("Begin");
-
+	
+	//noInterrupts();
   
   PCintPort::attachInterrupt(11, stationOneLCD, RISING);   //Station 1, D11
   PCintPort::attachInterrupt(12, stationTwoLCD, RISING);   //Station 2, D12
   PCintPort::attachInterrupt(13, stationThreeLCD, RISING);   //Station 3, D13
   PCintPort::attachInterrupt(A8, stationFourLCD, RISING);   //Station 4, D14
   PCintPort::attachInterrupt(A9, stationFiveLCD, RISING); //Station 5, D15
+
+
+  //Serial.println("Completed Masking");
   
   lcd.setCursor(0,0);
   lcd.print("Beginning Program");
-
-	Serial.println(", Initializing Bays");
-	bays[0] = StationBay();
-	bays[1] = StationBay(A5, 24, 11);
-	bays[2] = StationBay(A4, 25, 12);
-	bays[3] = StationBay(A3, 26, 13);
-	bays[4] = StationBay(A2, 27, A8);
-	bays[5] = StationBay(A1, 28, A9);
-	lcd.setCursor(0,1);
-	lcd.print("Bays Initialized");
+  for(int i = 0; i < 1024; i++){
+  	if(EEPROM.read(i) == 1){
+  	  readInCycleCounts();
+  	  lcd.setCursor(0,1);
+  	  lcd.print("Reading in counts");
+  	  delay(3000);
+  	} 
+  }
+  if(EEPROM.read(0) == 0){
+	  Serial.println("No EEPROM, Initializing Bays");
+	  bays[0] = StationBay();
+	  bays[1] = StationBay(A5, 24, 11);
+	  bays[2] = StationBay(A4, 25, 12);
+	  bays[3] = StationBay(A3, 26, 13);
+	  bays[4] = StationBay(A2, 27, A8);
+	  bays[5] = StationBay(A1, 28, A9);
+	  lcd.setCursor(0,1);
+	  lcd.print("Bays Initialized");
+  } 
   
   lcd.setCursor(0,3);
   lcd.print("Trying to connect");
@@ -74,7 +102,13 @@ void setup() {
   lcd.clear();
   Serial.println("lcd cleared");
 
+  //interrupts();
 
+  //MCUSR = 0; //reset the status register of the MCU
+  //WDTCSR |= ((1<<WDCE) | (1<<WDE));
+  //// set the "Interrupt Mode" with a timeout of 8 sec
+  //WDTCSR = ((1<<WDIE)| (1<<WDP3) | (1<<WDP0));
+  //SREG |= (1<<SREG_I); //re-enable global interrupts
 }
 
 //*****************************************************************************************************************************************
@@ -98,26 +132,33 @@ void loop() {
   }
   switch(Ethernet.maintain()){
     case 0:
+      //Serial.print("In case 0");
       printIPAddress();
       //wdt_reset();
       break;
-    case 1: 
+    case 1:
+      //Serial.print("In case 1");    
       lcd.clear();
       lcd.setCursor(0,0);
       lcd.print("Ethernet renew failed");
       ethernetCounter++;
       break;
     case 2:
+     //Serial.print("In case 2");
       printIPAddress();
+      //wdt_reset();
       break;
     case 3:
+      //Serial.print("In case 3");
       lcd.clear();
       lcd.setCursor(0,0);
       lcd.print("Ethernet rebind fail");
       ethernetCounter++;
       break;
     case 4:
+	  //Serial.print("In case 4");
       printIPAddress();
+      //wdt_reset();
       break;
     default:
       break;
@@ -127,35 +168,40 @@ void loop() {
 
 //**************************************************************************************************************************************
 //Pin Change Interrupts
-//Cycle Counting interrupts
+//LCD interrupts
 void stationOneLCD(){
   bays[1].incrementCycleCount();
   bays[1].setIsStuckFalse();
   bays[1].setStationTimer(millis() + 7000);
+  //checkTimers(); 
 }
 
 void stationTwoLCD(){
   bays[2].incrementCycleCount();
   bays[2].setIsStuckFalse();
   bays[2].setStationTimer(millis() + 7000);
+  //checkTimers();
 }
 
 void stationThreeLCD(){
   bays[3].incrementCycleCount();
   bays[3].setIsStuckFalse();
   bays[3].setStationTimer(millis() + 7000);
+  //checkTimers();
 }
 
 void stationFourLCD(){
   bays[4].incrementCycleCount();
   bays[4].setIsStuckFalse();
   bays[4].setStationTimer(millis() + 7000);
+  //checkTimers();
 }
 
 void stationFiveLCD(){
   bays[5].incrementCycleCount();
   bays[5].setIsStuckFalse();
   bays[5].setStationTimer(millis() + 7000);
+  //checkTimers();
 }
 
 //*****************************************************************************************************************************************
@@ -169,7 +215,45 @@ void storeCycleCounts(){
   }
 }
 
+//read in stored cycle counts from EEPROM and then wipe
+void readInCycleCounts(){
+  int station = 1;
+  bays[0] = StationBay();
+  for(int byteNo = 0; byteNo < 10; byteNo+=2){
+    byte high = EEPROM.read(byteNo);
+    byte low = EEPROM.read(byteNo + 1);
+    int cc = (high<<8) + low;
+
+    switch(station){
+      case(1):
+        bays[1] = StationBay(21,31,15, cc);
+        break;
+      case(2):
+        bays[2] = StationBay(20,32,14, cc);
+        break;
+      case(3):
+        bays[3] = StationBay(19,33,13, cc);
+        break;
+      case(4):
+        bays[4] = StationBay(18,34,12, cc);
+        break;
+      case(5):
+        bays[5] = StationBay(03,35,11, cc);
+        break;
+      default:
+        break;
+    }
+  }
+
+  //clears EEPROM
+  for(int i = 0; i < 1024; i++){
+    EEPROM.write(i, 0);
+  }
+  //wdt_reset();
+}
+
 void printIPAddress(){
+  //Serial.println("printing IP Address");
   if(mainLCDTimerRefresh < millis()){
     lcd.clear();
     lcd.setCursor(0,0);
@@ -178,11 +262,14 @@ void printIPAddress(){
     lcd.print("Your Web Browser");
     lcd.setCursor(0,2);
     lcd.print("IP Address:");
+   // Serial.print("IP Address:");
     lcd.setCursor(0,3);
     for(byte thisByte = 0; thisByte < 4; thisByte++){
       lcd.print(Ethernet.localIP()[thisByte], DEC);
+     // Serial.print(Ethernet.localIP()[thisByte], DEC);
      if(thisByte <= 2){
         lcd.print(".");
+       // Serial.print(".");
      }
     }
     mainLCDTimerRefresh = millis() + 5000;
@@ -212,6 +299,10 @@ void checkReset(){
     if(analogRead(bays[i].getResetPin())*5.0/1023.0 > 4.8 && bays[i].getPowerStatus()== 0){ //Initial Check
       delay(50);                                                                            //Debounce Noise
       if(analogRead(bays[i].getResetPin())*5.0/1023.0>4.0){                                 //Secondary Check
+        Serial.print("Bay Reset: ");
+        Serial.print(i);
+        Serial.print("   Voltage is ");
+        Serial.println(analogRead(bays[i].getResetPin())*5.0/1023.0);
         bays[i].resetCycleCount();
         bays[i].resetTimesIsStuck();   
       }
@@ -221,6 +312,10 @@ void checkReset(){
 
 void checkTimers(){
   for(int i = 1; i < 6; i++){
+//    Serial.print("StationTimer: " + bays[i].getStationTimer());
+//    Serial.print(" Millis: " + millis());
+//    Serial.print(" PowerStatus: " + bays[i].getPowerStatus());
+//    Serial.println();
     if((long) millis() > bays[i].getStationTimer() && bays[i].getPowerStatus() == 1){
        if(bays[i].getIsStuck() == 0){
           bays[i].incrementTimesIsStuck();
@@ -244,6 +339,7 @@ void writeToHTML(){
     while (client.connected()) {
       if (client.available()) {
         char c = client.read();
+       // Serial.write(c);
         // if you've gotten to the end of the line (received a newline
         // character) and the line is blank, the http request has ended,
         // so you can send a reply
@@ -271,6 +367,9 @@ void writeToHTML(){
           client.println("<h1> The Master Lock Company LLC</h1>");
           client.println("<h2>The Technology Testing Center (3TC)</h2>");
           client.println("<p>Automated Pneumatic Cycle Test Fixture</p>");
+          
+//          String milliseconds = String(millis());
+//          client.println("<p>" + milliseconds + "</p>");
 
           //Insert table of StationBay data - Set up table headers
           client.println("<table class=\"table table-bordered table-striped table-hover\">");
@@ -282,6 +381,7 @@ void writeToHTML(){
           client.println("<th style=\"text-align:center\">Stuck? </th>");
           client.println("<th style=\"text-align:center\">Times Stuck </th>");
           client.println("<th style=\"text-align:center\">Cycle Count </th>");
+//          client.println("<th style=\"text-align:center\">Station Timer </th>");
           client.println("</tr>");
           client.println("</thead>");
 
@@ -308,6 +408,7 @@ void writeToHTML(){
               } else if(bays[stationNo].getIsStuck() == 1){
                   client.println("<td align = \"center\" BGCOLOR=\"DC143C\"> YES </td>");
                   
+                 // client.println("<td align = \"center\"> YES </td>");
               }
               
               client.println("<td align = \"center\">");
